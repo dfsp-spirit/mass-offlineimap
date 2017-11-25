@@ -1,0 +1,7 @@
+[general]
+accounts = mass-offlineimap
+maxsyncaccounts = 1
+ 
+[Account mass-offlineimap]
+remoterepository = oldserver
+localrepository = newserver
