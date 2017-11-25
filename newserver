@@ -1,3 +1,4 @@
+[Repository newserver]
 type = IMAP
 remotehost = imap.1und1.de
 ssl = yes

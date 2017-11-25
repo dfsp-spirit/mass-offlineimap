@@ -7,5 +7,3 @@ maxconnections = 1
 cert_fingerprint = 250ede15cd4b6f45f4b41ebeb4de9a3cd2abaaad
 #folderfilter = lambda folder: folder not in []
 readonly = true
-#remoteuser = olduser@old.example.org
-#remotepass = secretPassword
