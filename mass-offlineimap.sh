@@ -7,9 +7,63 @@ FILE_GENERAL='./general'
 FILE_OLDSERVER='./oldserver'
 FILE_NEWSERVER='./newserver'
 FILE_ACCOUNT_MAPPING='./account_mapping'
+GENERATE_CFG_LOCAL='NO'
+GENERATE_CFG_REMOTE='NO'
+LOCAL_BACKUP_DIR='./local_backup'
+
+
+# Functions
+
+function show_help {
+    echo "USAGE: $0 <options>"
+	echo "valid options are:"
+	echo "  -l    : generate local config  (create a local backup of server1)"
+	echo "  -r    : generate remote config (sync server1 to another server2)"
+	echo "  -h    : show this help and exit"
+} 
+				
+# Let's go
 
 echo "$APPTAG mass-offlineimap -- sync a number of mail accounts between an old and a new mail server"
+
+# Parse command line args (using getops)
+
+OPTIND=1         # Reset in case getopts has been used previously in the shell.
+# Initialize our own variables:
+
+
+while getopts "hlr" opt; do
+    case "$opt" in
+    h)
+        show_help
+        exit 0
+        ;;
+    l)  GENERATE_CFG_LOCAL="YES"
+        ;;
+    r)  GENERATE_CFG_REMOTE="YES"
+        ;;
+    esac
+done
+
+shift $((OPTIND-1))
+
+[ "$1" = "--" ] && shift
+
+echo "GENERATE_CFG_LOCAL=$GENERATE_CFG_LOCAL, GENERATE_CFG_MIRROR='$GENERATE_CFG_MIRROR', Leftovers: $@"
+
 echo "$APPTAG Using old server data from '$FILE_OLDSERVER', new server data from '$FILE_NEWSERVER', account mapping data from '$FILE_ACCOUNT_MAPPING'."
+
+if [ "$GENERATE_CFG_LOCAL" == "NO" -a "$GENERATE_CFG_LOCAL" == "NO" ]; then 
+  echo "No task specified."
+  show_help
+  exit 0
+fi
+
+if [ "$GENERATE_CFG_LOCAL" == "YES" -a "$GENERATE_CFG_LOCAL" == "YES" ]; then 
+  echo "Two tasks specified. Must specify exactly one task (-l or -r)."
+  show_help
+  exit 1
+fi
 
 # The account mapping file has one line per account in format: '<old_user> <new_user> <old_pwd> <new_pwd>'. Separator is one space.
 while read -r line || [[ -n "$line" ]]; do
@@ -22,7 +76,10 @@ while read -r line || [[ -n "$line" ]]; do
     echo "$APPTAG Found in line old user: $OLD_USER, new user $NEW_USER, old password $OLD_PASSWORD, new password $NEW_PASSWORD."
     
     # Now create the config file for this user:
-    FILE_USER_OFFLINEIMAP_CONF="offlineimap_${OLD_USER}"
+    FILE_USER_OFFLINEIMAP_CONF="offlineimap_local_${OLD_USER}"
+	if [ "$GENERATE_CFG_REMOTE" == "YES" ]; then
+	    FILE_USER_OFFLINEIMAP_CONF="offlineimap_remote_${OLD_USER}"
+	fi
     echo "$APPTAG Creating config file $FILE_USER_OFFLINEIMAP_CONF for user $OLD_USER"
     touch "$FILE_USER_OFFLINEIMAP_CONF"
     echo '' > "$FILE_USER_OFFLINEIMAP_CONF"
@@ -38,10 +95,31 @@ while read -r line || [[ -n "$line" ]]; do
     echo "remotepass = ${OLD_PASSWORD}"  >> "$FILE_USER_OFFLINEIMAP_CONF"
     echo '' >> "$FILE_USER_OFFLINEIMAP_CONF"
     
-    # Add information on new server
-    cat "$FILE_NEWSERVER" >> "$FILE_USER_OFFLINEIMAP_CONF"
-    echo "remoteuser = ${NEW_USER}"  >> "$FILE_USER_OFFLINEIMAP_CONF"
-    echo "remotepass = ${NEW_PASSWORD}"  >> "$FILE_USER_OFFLINEIMAP_CONF"
+	if [ "$GENERATE_CFG_REMOTE" == "YES" ]; then
+	    echo "$APPTAG Generating REMOTE config in file ${FILE_USER_OFFLINEIMAP_CONF}"
+        # Add information on new mirror server
+        cat "$FILE_NEWSERVER" >> "$FILE_USER_OFFLINEIMAP_CONF"
+        echo "remoteuser = ${NEW_USER}"  >> "$FILE_USER_OFFLINEIMAP_CONF"
+        echo "remotepass = ${NEW_PASSWORD}"  >> "$FILE_USER_OFFLINEIMAP_CONF"
+	fi
+	
+	if [ "$GENERATE_CFG_LOCAL" == "YES" ]; then
+	    # Add information on local backup dir
+		echo "$APPTAG Generating LOCAL config in file ${FILE_USER_OFFLINEIMAP_CONF}"
+		if [ ! -d "$LOCAL_BACKUP_DIR" ]; then
+		    mkdir -p "$LOCAL_BACKUP_DIR"
+		fi
+		LOCAL_BACKUP_DIR_USER="${LOCAL_BACKUP_DIR}_${OLD_USER}"
+		if [ -d "$LOCAL_BACKUP_DIR_USER" ]; then
+		    echo "ERROR: Mail backup dir $LOCAL_BACKUP_DIR_USER for user $OLD_USER already exists, will not overwrite it."
+			exit 1
+		fi
+		mkdir -p "$LOCAL_BACKUP_DIR_USER"
+	    echo '[Repository newserver]' >> "$FILE_USER_OFFLINEIMAP_CONF"
+        echo 'type = Maildir' >> "$FILE_USER_OFFLINEIMAP_CONF"
+        echo "localfolders = ${LOCAL_BACKUP_DIR_USER}" >> "$FILE_USER_OFFLINEIMAP_CONF"
+	fi
+	
 done < "$FILE_ACCOUNT_MAPPING"
 
 
