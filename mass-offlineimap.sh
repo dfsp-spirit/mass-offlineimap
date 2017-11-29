@@ -49,17 +49,17 @@ shift $((OPTIND-1))
 
 [ "$1" = "--" ] && shift
 
-echo "GENERATE_CFG_LOCAL=$GENERATE_CFG_LOCAL, GENERATE_CFG_MIRROR='$GENERATE_CFG_MIRROR', Leftovers: $@"
+echo "GENERATE_CFG_LOCAL=$GENERATE_CFG_LOCAL, GENERATE_CFG_REMOTE='$GENERATE_CFG_REMOTE', Leftovers: $@"
 
 echo "$APPTAG Using old server data from '$FILE_OLDSERVER', new server data from '$FILE_NEWSERVER', account mapping data from '$FILE_ACCOUNT_MAPPING'."
 
-if [ "$GENERATE_CFG_LOCAL" == "NO" -a "$GENERATE_CFG_LOCAL" == "NO" ]; then 
+if [ "$GENERATE_CFG_LOCAL" = "NO" -a "$GENERATE_CFG_LOCAL" = "NO" ]; then 
   echo "No task specified."
   show_help
   exit 0
 fi
 
-if [ "$GENERATE_CFG_LOCAL" == "YES" -a "$GENERATE_CFG_LOCAL" == "YES" ]; then 
+if [ "$GENERATE_CFG_LOCAL" = "YES" -a "$GENERATE_CFG_LOCAL" = "YES" ]; then 
   echo "Two tasks specified. Must specify exactly one task (-l or -r)."
   show_help
   exit 1
@@ -77,7 +77,7 @@ while read -r line || [[ -n "$line" ]]; do
     
     # Now create the config file for this user:
     FILE_USER_OFFLINEIMAP_CONF="offlineimap_local_${OLD_USER}"
-	if [ "$GENERATE_CFG_REMOTE" == "YES" ]; then
+	if [ "$GENERATE_CFG_REMOTE" = "YES" ]; then
 	    FILE_USER_OFFLINEIMAP_CONF="offlineimap_remote_${OLD_USER}"
 	fi
     echo "$APPTAG Creating config file $FILE_USER_OFFLINEIMAP_CONF for user $OLD_USER"
@@ -95,7 +95,7 @@ while read -r line || [[ -n "$line" ]]; do
     echo "remotepass = ${OLD_PASSWORD}"  >> "$FILE_USER_OFFLINEIMAP_CONF"
     echo '' >> "$FILE_USER_OFFLINEIMAP_CONF"
     
-	if [ "$GENERATE_CFG_REMOTE" == "YES" ]; then
+	if [ "$GENERATE_CFG_REMOTE" = "YES" ]; then
 	    echo "$APPTAG Generating REMOTE config in file ${FILE_USER_OFFLINEIMAP_CONF}"
         # Add information on new mirror server
         cat "$FILE_NEWSERVER" >> "$FILE_USER_OFFLINEIMAP_CONF"
@@ -103,7 +103,7 @@ while read -r line || [[ -n "$line" ]]; do
         echo "remotepass = ${NEW_PASSWORD}"  >> "$FILE_USER_OFFLINEIMAP_CONF"
 	fi
 	
-	if [ "$GENERATE_CFG_LOCAL" == "YES" ]; then
+	if [ "$GENERATE_CFG_LOCAL" = "YES" ]; then
 	    # Add information on local backup dir
 		echo "$APPTAG Generating LOCAL config in file ${FILE_USER_OFFLINEIMAP_CONF}"
 		if [ ! -d "$LOCAL_BACKUP_DIR" ]; then
