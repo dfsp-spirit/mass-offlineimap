@@ -30,4 +30,4 @@ If you have a problem with this script, let me know at GitHub.
 
 ## License
 
-MIT, see https://opensource.org/licenses/MIT
+GPL v2, see the LICENSE file.
