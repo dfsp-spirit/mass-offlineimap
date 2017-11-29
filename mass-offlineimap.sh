@@ -88,6 +88,7 @@ while read -r line || [[ -n "$line" ]]; do
     
     # Add boiler plate
     cat "$FILE_GENERAL" >> "$FILE_USER_OFFLINEIMAP_CONF"
+	echo '' >> "$FILE_USER_OFFLINEIMAP_CONF"
     
     # Add information on old server
     cat "$FILE_OLDSERVER" >> "$FILE_USER_OFFLINEIMAP_CONF"
@@ -112,6 +113,7 @@ while read -r line || [[ -n "$line" ]]; do
 		LOCAL_BACKUP_DIR_USER="${LOCAL_BACKUP_DIR}_${OLD_USER}"
 		if [ -d "$LOCAL_BACKUP_DIR_USER" ]; then
 		    echo "ERROR: Mail backup dir $LOCAL_BACKUP_DIR_USER for user $OLD_USER already exists, will not overwrite it."
+			rm "${FILE_USER_OFFLINEIMAP_CONF}"
 			exit 1
 		fi
 		mkdir -p "$LOCAL_BACKUP_DIR_USER"
