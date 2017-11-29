@@ -12,7 +12,15 @@ This is a `Bash` shellscript that uses the `offlineimap` tool to get the job don
 
 ## Usage
 
+WARNING: Emails, especially those of others, are better kept safe. Be sure you know what you are doing before running this. You may lose data! This tool comes without any warranties, see the license.
+
 Run `./mass-offlineimap -h` for help.
+
+Basically edit the config files `oldserver` and `newserver`. Then copy the example file `account_mapping.example` to `account_mapping` and fill out user mappings. See the examples in the files, it's easy.
+
+Then run `./mass-offlineimap -l` to generate the config for a local mass backup, or `./mass-offlineimap -r` to generate the config for a sync between two remote servers.
+
+Then run `offlineimap -c <configfile>` to start the sync. (When you run mass-offlineimap, it prints the exact command that is suitable, you can just copy that.)
 
 
 ## License
