@@ -128,6 +128,7 @@ done < "$FILE_ACCOUNT_MAPPING"
 echo "$APPTAG All config files for offlineimap created. Note that the accounts are NOT synced yet!"
 echo "$APPTAG   * To sync a single account: offlineimap -c <configfile>"
 echo -n "$APPTAG"
-echo '   * To sync all accounts: for FILE in offlineimap_*; do offlineimap -c $FILE; done'
+echo '   * To backup all accounts: for FILE in offlineimap_local_*; do offlineimap -c $FILE; done > sync_local.log 2>&1'
+echo '   * To sync all accounts: for FILE in offlineimap_remote_*; do offlineimap -c $FILE; done > sync_remote.log 2>&1'
 echo "$APPTAG Exiting."
 
