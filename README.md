@@ -26,7 +26,7 @@ Then run `offlineimap -c <configfile>` to start the sync/backup for a single acc
 
 If you get any python stack traces, these are from offlineimap. Just search the web for the error message.
 
-If you have a problem with this script, let me know at GitHub.
+If you have a problem with this script, open an issue at GitHub. See https://github.com/dfsp-spirit/mass-offlineimap/issues 
 
 ## License
 
