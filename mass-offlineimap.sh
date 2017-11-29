@@ -110,7 +110,7 @@ while read -r line || [[ -n "$line" ]]; do
 		if [ ! -d "$LOCAL_BACKUP_DIR" ]; then
 		    mkdir -p "$LOCAL_BACKUP_DIR"
 		fi
-		LOCAL_BACKUP_DIR_USER="${LOCAL_BACKUP_DIR}_${OLD_USER}"
+		LOCAL_BACKUP_DIR_USER="${LOCAL_BACKUP_DIR}/${OLD_USER}"
 		if [ -d "$LOCAL_BACKUP_DIR_USER" ]; then
 		    echo "ERROR: Mail backup dir $LOCAL_BACKUP_DIR_USER for user $OLD_USER already exists, will not overwrite it."
 			rm "${FILE_USER_OFFLINEIMAP_CONF}"
