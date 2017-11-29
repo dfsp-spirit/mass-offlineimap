@@ -53,13 +53,13 @@ echo "GENERATE_CFG_LOCAL=$GENERATE_CFG_LOCAL, GENERATE_CFG_REMOTE='$GENERATE_CFG
 
 echo "$APPTAG Using old server data from '$FILE_OLDSERVER', new server data from '$FILE_NEWSERVER', account mapping data from '$FILE_ACCOUNT_MAPPING'."
 
-if [ "$GENERATE_CFG_LOCAL" = "NO" -a "$GENERATE_CFG_LOCAL" = "NO" ]; then 
+if [ "$GENERATE_CFG_LOCAL" = "NO" -a "$GENERATE_CFG_REMOTE" = "NO" ]; then 
   echo "No task specified."
   show_help
   exit 0
 fi
 
-if [ "$GENERATE_CFG_LOCAL" = "YES" -a "$GENERATE_CFG_LOCAL" = "YES" ]; then 
+if [ "$GENERATE_CFG_LOCAL" = "YES" -a "$GENERATE_CFG_REMOTE" = "YES" ]; then 
   echo "Two tasks specified. Must specify exactly one task (-l or -r)."
   show_help
   exit 1
