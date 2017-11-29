@@ -1,5 +1,5 @@
 #!/bin/bash
-# mass-offlineimap -- sync a number of mail accounts between an old and a new mail server (i.e., move all emails over)
+# mass-offlineimap -- sync a number of mail accounts between an old and a new mail server (i.e., move all emails over). Also supports local backups.
 # written by Tim Schäfer, 12/2017
 
 APPTAG='[MOI]'
