@@ -4,7 +4,7 @@ Script to move manyIMAP mail accounts from an old to a new server over IMAP usin
 
 ## Motivation
 
-The `offlineimap` tool is great to sync your mailbox, but if you have to move many mailboxes from one server to another (or create local backups of many mailboxes on one server), writing the config files for it gets tedious. This small and simple scripts generates them for you. Using this script only makes sense if you have many mailboxes on the same server. If not, you can simply use `offlineimap` directly.
+The `offlineimap` tool is great to sync your mailbox, but if you have to move many mailboxes from one server to another (or create local backups of many mailboxes on one server), writing the config files for it gets tedious. This small and simple scripts generates them for you. Using this script only makes sense if you have many mailboxes on the same server. If not, you can simply use `offlineimap` directly. Like offlineimap, this script uses the IMAP protocol to access mails on servers, so you do not need file system level or ssh access to the mail server. The data you need to setup your email client is enough.
 
 ## Dependencies
 
