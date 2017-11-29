@@ -20,8 +20,13 @@ Basically edit the config files `oldserver` and `newserver`. Then copy the examp
 
 Then run `./mass-offlineimap -l` to generate the config for a local mass backup, or `./mass-offlineimap -r` to generate the config for a sync between two remote servers.
 
-Then run `offlineimap -c <configfile>` to start the sync. (When you run mass-offlineimap, it prints the exact command that is suitable, you can just copy that.)
+Then run `offlineimap -c <configfile>` to start the sync/backup for a single account. When you run mass-offlineimap, it suggests commands you can use to backup/sync all accounts at once.
 
+## Issues
+
+If you get any python stack traces, these are from offlineimap. Just search the web for the error message.
+
+If you have a problem with this script, let me know at GitHub.
 
 ## License
 
