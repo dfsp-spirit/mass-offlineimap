@@ -11,6 +11,7 @@ FILE_ACCOUNT_MAPPING="$SETTINGS_DIR/account_mapping"
 GENERATE_CFG_LOCAL='NO'
 GENERATE_CFG_REMOTE='NO'
 LOCAL_BACKUP_DIR='./local_backup'
+GENERATED_CONFIGS_OUTPUT_DIR='./generated_cfgs'
 
 
 # Functions
@@ -51,7 +52,6 @@ shift $((OPTIND-1))
 [ "$1" = "--" ] && shift
 
 echo "$APPTAG GENERATE_CFG_LOCAL=$GENERATE_CFG_LOCAL, GENERATE_CFG_REMOTE='$GENERATE_CFG_REMOTE', Leftovers: $@"
-
 echo "$APPTAG Using old server data from '$FILE_OLDSERVER', new server data from '$FILE_NEWSERVER', account mapping data from '$FILE_ACCOUNT_MAPPING'."
 
 if [ "$GENERATE_CFG_LOCAL" = "NO" -a "$GENERATE_CFG_REMOTE" = "NO" ]; then 
@@ -66,6 +66,12 @@ if [ "$GENERATE_CFG_LOCAL" = "YES" -a "$GENERATE_CFG_REMOTE" = "YES" ]; then
   exit 1
 fi
 
+
+if [ ! -d "$GENERATED_CONFIGS_OUTPUT_DIR" ]; then
+    echo "$APPTAG     Generated config output directory ${GENERATED_CONFIGS_OUTPUT_DIR} does not exist, creating it."
+    mkdir -p "$GENERATED_CONFIGS_OUTPUT_DIR"
+fi
+
 # The account mapping file has one line per account in format: '<old_user> <new_user> <old_pwd> <new_pwd>'. Separator is one space.
 while read -r line || [[ -n "$line" ]]; do
     # Read account data from text file:
@@ -73,18 +79,22 @@ while read -r line || [[ -n "$line" ]]; do
     NEW_USER=$(echo "$line" | awk '{print $2}')
     OLD_PASSWORD=$(echo "$line" | awk '{print $3}')
     NEW_PASSWORD=$(echo "$line" | awk '{print $4}')
+
     # If the new password is not given, assume it is identical to the old one
     if [ -z "$NEW_PASSWORD" ]; then
         NEW_PASSWORD="$OLD_PASSWORD"
     fi
+
     echo "$APPTAG * Processing line for old user: $OLD_USER"
     #echo "$APPTAG     Found in line old user: $OLD_USER, new user $NEW_USER, old password $OLD_PASSWORD, new password $NEW_PASSWORD."
     
     # Now create the config file for this user:
-    FILE_USER_OFFLINEIMAP_CONF="offlineimap_local_${OLD_USER}"
-	if [ "$GENERATE_CFG_REMOTE" = "YES" ]; then
-	    FILE_USER_OFFLINEIMAP_CONF="offlineimap_remote_${OLD_USER}"
-	fi
+    FILE_USER_OFFLINEIMAP_CONF="${GENERATED_CONFIGS_OUTPUT_DIR}/offlineimap_local_${OLD_USER}"
+
+    if [ "$GENERATE_CFG_REMOTE" = "YES" ]; then
+        FILE_USER_OFFLINEIMAP_CONF="${GENERATED_CONFIGS_OUTPUT_DIR}/offlineimap_remote_${OLD_USER}"
+    fi
+
     echo "$APPTAG     Creating config file $FILE_USER_OFFLINEIMAP_CONF for user $OLD_USER"
     touch "$FILE_USER_OFFLINEIMAP_CONF"
     echo '' > "$FILE_USER_OFFLINEIMAP_CONF"
@@ -93,7 +103,7 @@ while read -r line || [[ -n "$line" ]]; do
     
     # Add boiler plate
     cat "$FILE_GENERAL" >> "$FILE_USER_OFFLINEIMAP_CONF"
-	echo '' >> "$FILE_USER_OFFLINEIMAP_CONF"
+    echo '' >> "$FILE_USER_OFFLINEIMAP_CONF"
     
     # Add information on old server
     cat "$FILE_OLDSERVER" >> "$FILE_USER_OFFLINEIMAP_CONF"
@@ -101,31 +111,35 @@ while read -r line || [[ -n "$line" ]]; do
     echo "remotepass = ${OLD_PASSWORD}"  >> "$FILE_USER_OFFLINEIMAP_CONF"
     echo '' >> "$FILE_USER_OFFLINEIMAP_CONF"
     
-	if [ "$GENERATE_CFG_REMOTE" = "YES" ]; then
-	    echo "$APPTAG     Generating REMOTE config in file ${FILE_USER_OFFLINEIMAP_CONF}"
-            # Add information on new mirror server
-            cat "$FILE_NEWSERVER" >> "$FILE_USER_OFFLINEIMAP_CONF"
-            echo "remoteuser = ${NEW_USER}"  >> "$FILE_USER_OFFLINEIMAP_CONF"
-            echo "remotepass = ${NEW_PASSWORD}"  >> "$FILE_USER_OFFLINEIMAP_CONF"
+    if [ "$GENERATE_CFG_REMOTE" = "YES" ]; then
+        echo "$APPTAG     Generating REMOTE sync config in file ${FILE_USER_OFFLINEIMAP_CONF}"
+        # Add information on new mirror server
+        cat "$FILE_NEWSERVER" >> "$FILE_USER_OFFLINEIMAP_CONF"
+        echo "remoteuser = ${NEW_USER}"  >> "$FILE_USER_OFFLINEIMAP_CONF"
+        echo "remotepass = ${NEW_PASSWORD}"  >> "$FILE_USER_OFFLINEIMAP_CONF"
+    fi
+	
+    if [ "$GENERATE_CFG_LOCAL" = "YES" ]; then
+        # Add information on local backup dir
+	echo "$APPTAG     Generating LOCAL backup config in file ${FILE_USER_OFFLINEIMAP_CONF}"
+	
+        if [ ! -d "$LOCAL_BACKUP_DIR" ]; then
+            echo "$APPTAG     Local base backup dir ${LOCAL_BACKUP_DIR} does not exist, creating it."
+	    mkdir -p "$LOCAL_BACKUP_DIR"
 	fi
 	
-	if [ "$GENERATE_CFG_LOCAL" = "YES" ]; then
-	    # Add information on local backup dir
-		echo "$APPTAG     Generating LOCAL config in file ${FILE_USER_OFFLINEIMAP_CONF}"
-		if [ ! -d "$LOCAL_BACKUP_DIR" ]; then
-                    echo "$APPTAG     Local base backup dir ${LOCAL_BACKUP_DIR} does not exist, creating it."
-		    mkdir -p "$LOCAL_BACKUP_DIR"
-		fi
-		LOCAL_BACKUP_DIR_USER="${LOCAL_BACKUP_DIR}/${OLD_USER}"
-		if [ -d "$LOCAL_BACKUP_DIR_USER" ]; then
-		    echo "$APPTAG     Mail backup dir $LOCAL_BACKUP_DIR_USER for user $OLD_USER already exists, keeping the data in there."
-                else
-		    mkdir -p "$LOCAL_BACKUP_DIR_USER"
-		fi
-	    echo '[Repository newserver]' >> "$FILE_USER_OFFLINEIMAP_CONF"
+	LOCAL_BACKUP_DIR_USER="${LOCAL_BACKUP_DIR}/${OLD_USER}"
+	
+        if [ -d "$LOCAL_BACKUP_DIR_USER" ]; then
+	    echo "$APPTAG     Mail backup dir $LOCAL_BACKUP_DIR_USER for user $OLD_USER already exists, keeping the data in there."
+        else
+	    mkdir -p "$LOCAL_BACKUP_DIR_USER"
+	fi
+	
+        echo '[Repository newserver]' >> "$FILE_USER_OFFLINEIMAP_CONF"
         echo 'type = Maildir' >> "$FILE_USER_OFFLINEIMAP_CONF"
         echo "localfolders = ${LOCAL_BACKUP_DIR_USER}" >> "$FILE_USER_OFFLINEIMAP_CONF"
-	fi
+    fi
 	
 done < "$FILE_ACCOUNT_MAPPING"
 
