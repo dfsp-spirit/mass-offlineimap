@@ -72,6 +72,10 @@ while read -r line || [[ -n "$line" ]]; do
     NEW_USER=$(echo "$line" | awk '{print $2}')
     OLD_PASSWORD=$(echo "$line" | awk '{print $3}')
     NEW_PASSWORD=$(echo "$line" | awk '{print $4}')
+    # If the new password is not given, assume it is identical to the old one
+    if [ -z "$NEW_PASSWORD" ]; then
+        NEW_PASSWORD="$OLD_PASSWORD"
+    fi
     echo "$APPTAG * Processing line for old user: $OLD_USER"
     #echo "$APPTAG     Found in line old user: $OLD_USER, new user $NEW_USER, old password $OLD_PASSWORD, new password $NEW_PASSWORD."
     
