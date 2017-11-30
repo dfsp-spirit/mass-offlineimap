@@ -3,10 +3,11 @@
 # written by Tim Schäfer, 12/2017
 
 APPTAG='[MOI]'
-FILE_GENERAL='./general'
-FILE_OLDSERVER='./oldserver'
-FILE_NEWSERVER='./newserver'
-FILE_ACCOUNT_MAPPING='./account_mapping'
+SETTINGS_DIR='./settings'
+FILE_GENERAL="$SETTINGS_DIR/general"
+FILE_OLDSERVER="$SETTINGS_DIR/oldserver"
+FILE_NEWSERVER="$SETTINGS_DIR/newserver"
+FILE_ACCOUNT_MAPPING="$SETTINGS_DIR/account_mapping"
 GENERATE_CFG_LOCAL='NO'
 GENERATE_CFG_REMOTE='NO'
 LOCAL_BACKUP_DIR='./local_backup'
