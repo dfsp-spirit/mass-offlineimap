@@ -128,23 +128,22 @@ while read -r line || [[ -n "$line" ]]; do
 	
     if [ "$GENERATE_CFG_LOCAL" = "YES" ]; then
         # Add information on local backup dir
-	echo "$APPTAG     Generating LOCAL backup config in file ${FILE_USER_OFFLINEIMAP_CONF}"
-	
+	    echo "$APPTAG     Generating LOCAL backup config in file ${FILE_USER_OFFLINEIMAP_CONF}"
         if [ ! -d "$LOCAL_BACKUP_DIR" ]; then
             echo "$APPTAG     Local base backup dir ${LOCAL_BACKUP_DIR} does not exist, creating it."
-	    mkdir -p "$LOCAL_BACKUP_DIR"
-	fi
+	        mkdir -p "$LOCAL_BACKUP_DIR" || echo "$APPTAG ERROR: Failed to create directory $LOCAL_BACKUP_DIR"
+	    fi
 	
-	LOCAL_BACKUP_DIR_USER="${LOCAL_BACKUP_DIR}/${OLD_USER}"
+	    LOCAL_BACKUP_DIR_USER="${LOCAL_BACKUP_DIR}/${OLD_USER}"
 	
         if [ -d "$LOCAL_BACKUP_DIR_USER" ]; then
-	    echo "$APPTAG     Mail backup dir $LOCAL_BACKUP_DIR_USER for user $OLD_USER already exists, keeping the data in there."
+	        echo "$APPTAG     Mail backup dir $LOCAL_BACKUP_DIR_USER for user $OLD_USER already exists, keeping the data in there."
         else
-	    mkdir -p "$LOCAL_BACKUP_DIR_USER"
-	fi
+	        mkdir -p "$LOCAL_BACKUP_DIR_USER" || echo "$APPTAG ERROR: Failed to create directory $LOCAL_BACKUP_DIR_USER"
+	    fi
 	
-        echo '[Repository newserver-${ACCOUNT_NAME}]' >> "$FILE_USER_OFFLINEIMAP_CONF"
-        echo 'type = Maildir' >> "$FILE_USER_OFFLINEIMAP_CONF"
+        echo "[Repository newserver-${ACCOUNT_NAME}]" >> "$FILE_USER_OFFLINEIMAP_CONF"
+        echo "type = Maildir" >> "$FILE_USER_OFFLINEIMAP_CONF"
         echo "localfolders = ${LOCAL_BACKUP_DIR_USER}" >> "$FILE_USER_OFFLINEIMAP_CONF"
     fi
 	
