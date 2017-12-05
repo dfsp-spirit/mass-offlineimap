@@ -147,8 +147,8 @@ done < "$FILE_ACCOUNT_MAPPING"
 echo "$APPTAG All config files for offlineimap created. Note that the accounts are NOT synced yet!"
 echo "$APPTAG   * To sync/backup a single account: offlineimap -c <configfile>"
 echo -n "$APPTAG"
-echo '   * To backup all accounts: for FILE in ./generated_cfgs/offlineimap_local_*; do echo "##### Processing file $FILE ####"; offlineimap -c $FILE; echo "### Done processing file $FILE ###"; done 2>&1 | tee sync_local.log'
+echo '   * To backup all accounts: for FILE in ./generated_cfgs/offlineimap_local_*; do echo "##### Processing file $FILE ####"; offlineimap -c $FILE && echo "KKKKK Done processing file $FILE, no problems. KKKKK" || echo "EEEEE Errors occured while processing file $FILE. EEEEE"; done 2>&1 | tee sync_local.log'
 echo -n "$APPTAG"
-echo '   * To sync all accounts: for FILE in ./generated_cfgs/offlineimap_remote_*; do echo "##### Processing file $FILE #####"; offlineimap -c $FILE; echo "### Done processing file $FILE ###"; done 2>&1 | tee sync_remote.log'
+echo '   * To sync all accounts: for FILE in ./generated_cfgs/offlineimap_remote_*; do echo "##### Processing file $FILE #####"; offlineimap -c $FILE && echo "KKKKK Done processing file $FILE, no problems. KKKKK" || echo "EEEEE Errors occured while processing fil $FILE. EEEEE"; done 2>&1 | tee sync_remote.log'
 echo "$APPTAG Exiting."
 
