@@ -75,8 +75,7 @@ fi
 # The account mapping file has one line per account in format: '<old_user> <new_user> <old_pwd> <new_pwd>'. Separator is one space.
 ACCOUNT_NUMBER=0
 while read -r line || [[ -n "$line" ]]; do
-    ACCOUNT_NUMBER=$((ACCOUNT_NUMBER + 1))
-	ACCOUNT_NAME="acc${ACCOUNT_NUMBER}"
+    ACCOUNT_NUMBER=$((ACCOUNT_NUMBER + 1))	
     # Read account data from text file:
     OLD_USER=$(echo "$line" | awk '{print $1}')
     NEW_USER=$(echo "$line" | awk '{print $2}')
@@ -93,9 +92,11 @@ while read -r line || [[ -n "$line" ]]; do
     
     # Now create the config file for this user:
     FILE_USER_OFFLINEIMAP_CONF="${GENERATED_CONFIGS_OUTPUT_DIR}/offlineimap_local_${OLD_USER}"
+	ACCOUNT_NAME="acc-local-${ACCOUNT_NUMBER}"
 
     if [ "$GENERATE_CFG_REMOTE" = "YES" ]; then
         FILE_USER_OFFLINEIMAP_CONF="${GENERATED_CONFIGS_OUTPUT_DIR}/offlineimap_remote_${OLD_USER}"
+		ACCOUNT_NAME="acc-remote-${ACCOUNT_NUMBER}"
     fi
 
     echo "$APPTAG     Creating config file $FILE_USER_OFFLINEIMAP_CONF for user $OLD_USER"
